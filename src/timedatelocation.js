@@ -7,10 +7,6 @@ export class UsersData {
         this.day;
         this.timezone;
         this.location;
-
-        this.setTimestamp();
-        this.setLocation();
-
     }
 
     static async init () {
@@ -33,7 +29,7 @@ export class UsersData {
         try {
             const position = await this.getPositon();
             
-            //let data = await fetch(`https://api.geoapify.com/v1/geocode/reverse?lat=${position.lat}&lon=${position.long}&apiKey=82044b6f0cfd4f8194819869cb67c48f`);
+            let data = await fetch(`https://api.geoapify.com/v1/geocode/reverse?lat=${position.lat}&lon=${position.long}&apiKey=82044b6f0cfd4f8194819869cb67c48f`);
             data = await data.json();
             this.location = data.features[0].properties.county;
         } catch(err) {
