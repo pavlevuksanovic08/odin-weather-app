@@ -1,7 +1,10 @@
 import { UsersData } from "./timedatelocation";
-import { sub } from "date-fns";
+import { sub, format, add, differenceInCalendarDays } from "date-fns";
+import { DayCard } from "./cardObject";
 
 const user = await UsersData.init();
+const storage = new DayCard();
+let standard = "c";
 console.log(user)
 
 class loadPage {
@@ -25,10 +28,11 @@ class loadPage {
 
     #makeCards() {
         const cards = document.getElementById("cards-section");
-        for (let i = 0; i < 7; i++) {
+        for (let i = 0; i < 6; i++) {
             const placeholder = document.createElement("div");
             placeholder.id = `c${i}`;
             placeholder.className = "card";
+            placeholder.value = false;
 
             const title = document.createElement("p");
             title.className = "card-title";
@@ -50,22 +54,41 @@ class loadPage {
         // COMPLETE WHEN YOU HAVE ALL DATA
     }
 
-    /*static async loadCity(cityName) {
+    static async loadCity(cityName) {
+        this.#clearCards();
         try {
-            await this.#loadHistory(cityName)
+            await this.#loadHistoryAndPresent(cityName);
+            await this.#loadForecast(cityName);
         } catch(err) {
             console.log(err);
         }
     }
 
-    static async #loadHistory(city) {
+    static async #loadHistoryAndPresent(city) {
         try {
-            for (let i = 0; i < 2; i++) {
-                const dt = sub(new Date(Date.now()), day, i + 1);
+            for (let i = 2; i >= 0; i--) {
+                const dt = format(sub(new Date(), {days: i}), "yyyy-MM-dd");
                 let data = await fetch(`https://api.weatherapi.com/v1/history.json?key=61b2b1c062454b8196c74023252809&q=${city}&dt=${dt}`);
                 data = await data.json();
+                let card = this.#findEmptyCard();    
+                storage.addCard(card, data);
+                this.#displayCard(storage.getCard(card.id));
+            }
+        } catch (err) {
+            throw new Error(err);
+        }
+        
+    }
+
+    static async #loadForecast(city) {
+        try {
+            for (let i = 1; i <= 3; i++) {
+                let dt = format(add(new Date(), {days: i}), "yyyy-MM-dd");
+                let data = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=61b2b1c062454b8196c74023252809&q=${city}&dt=${dt}`);
+                data = await data.json();
                 let card = this.#findEmptyCard();
-                console.log(card.id);
+                storage.addCard(card, data);
+                this.#displayCard(storage.getCard(card.id));
             }
         } catch (err) {
             console.log(err);
@@ -73,14 +96,36 @@ class loadPage {
         
     }
 
+    static #displayCard(cardData) {
+        const card = cardData.card;
+        const data = cardData.data;
+
+        //DISPLAY TITLE
+        card.querySelector(".card-title").innerText = getDayText(data.date);
+
+        card.querySelector(".card-temp").innerText = data.day[`avgtemp_${standard}`];
+
+        card.querySelector(".card-img").src = data.day.condition.icon;
+        console.log(cardData.data);
+    }
+
     static #findEmptyCard() {
-        const cards = document.querySelectorAll("card");
-        cards.forEach( card => {
-            if (card.innerHTML == "") {
+        const cards = document.querySelectorAll(".card");
+        for (let card of cards) {
+            if (!card.value) {
+                card.value = true;
                 return card;
             }
-        })
-    }*/
+        }
+    }
+
+    static #clearCards() {
+        const cards = document.querySelectorAll(".card");
+        for (let card of cards) {
+                card.value = false;
+                storage.array = [];
+            }
+        }
 }
 
 class Search {
@@ -97,7 +142,6 @@ class Search {
             try {
                 let suggestions = await fetch(`https://api.weatherapi.com/v1/search.json?key=61b2b1c062454b8196c74023252809&q=${event.target.value}`);
                 suggestions = await suggestions.json();
-                console.log(suggestions);
                 this.#loadSuggestions(suggestions);
             } catch(err) {
                 console.log(err);
@@ -143,6 +187,21 @@ class Search {
         })
     }
 
+}
+
+function getDayText(date) {
+    const today = format(new Date(), "yyyy-MM-dd");
+    if (date === today) {
+        return "Today";
+    } else if (differenceInCalendarDays(date, today) === -1) {
+        return "Yesterday";
+    } else if (differenceInCalendarDays(date, today) === 1) {
+        return "Tomorrow";
+    } else if (differenceInCalendarDays(date, today) < 1) {
+        return `${Math.abs(differenceInCalendarDays(date, today))} days ago`;
+    } else if (differenceInCalendarDays(date, today) > 1) {
+        return `in ${differenceInCalendarDays(date, today)} days`;
+    }
 }
 
 new loadPage();
