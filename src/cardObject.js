@@ -17,4 +17,11 @@ export class DayCard {
             }
         }
     }
+    getDatawDate(date) {
+        for (let item of this.array) {
+            if (item.data.date === date) {
+                return item;
+            }
+        }
+    }
 }

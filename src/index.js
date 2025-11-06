@@ -1,11 +1,24 @@
 import { UsersData } from "./timedatelocation";
 import { sub, format, add, differenceInCalendarDays } from "date-fns";
 import { DayCard } from "./cardObject";
+import lowTemp from "./images/mainDataImages/low-temperature.png";
+import highTemp from "./images/mainDataImages/high-temperature.png";
+import chanceOfRain from "./images/mainDataImages/chance_of_rain.png";
+import chanceOfSnow from "./images/mainDataImages/chance_of_snow.png";
+import humidity from "./images/mainDataImages/humidity.png";
+import visibility from "./images/mainDataImages/visibility.png";
+import precipitation from "./images/mainDataImages/precipitation.png";
+import snow from "./images/mainDataImages/snow.png";
+import wind from "./images/mainDataImages/wind.png";
+import uv from "./images/mainDataImages/uv.png";
+import sunrise from "./images/mainDataImages/sunrise.png";
+import sunset from "./images/mainDataImages/sunset.png";
+import moonrise from "./images/mainDataImages/moonrise.png";
+import moonset from "./images/mainDataImages/moonset.png";
 
 const user = await UsersData.init();
 const storage = new DayCard();
 let standard = "c";
-console.log(user)
 
 class loadPage {
     constructor() {
@@ -13,11 +26,21 @@ class loadPage {
         this.date = document.getElementById("date");
         this.day = document.getElementById("day");
         this.location = document.getElementById("location");
-
+        
         this.#loadTimestamp();
         this.#makeCards();
 
     }
+
+    static mainDayData = [
+        {text: "Minimum temperature", value: `mintemp_${standard}`, image: lowTemp, parent: "day"}, {text: "Maximum temperature temperature", value: `maxtemp_${standard}`, image: highTemp, parent: "day"},
+        {text: "Daily chance of rain", value: "daily_chance_of_rain", image: chanceOfRain, parent: "day"}, {text: "Daily chance of snow", value: "daily_chance_of_snow", image: chanceOfSnow, parent: "day"},
+        {text: "Average humidity", value: "avghumidity", image:humidity, parent: "day"}, {text: "Average visibility (km)", value: "avgvis_km", image: visibility, parent: "day"}, 
+        {text: "Total precipitation", value: "totalprecip_mm", image: precipitation, parent: "day"}, {text: "Total snow (cm)", value: "totalsnow_cm", image: snow, parent: "day"},
+        {text: "Maximum wind (kph)", value: "maxwind_kph", image: wind, parent: "day"}, {text: "UV", value: "uv", image: uv, parent: "day"},
+        {text: "Sunrise", value: "sunrise", image: sunrise, parent: "astro"}, {text: "Sunset", value: "sunset", image: sunset, parent: "astro"},
+        {text: "Moonrise", value: "moonrise", image: moonrise, parent: "astro"}, {text: "Moonset", value: "moonset", image: moonset, parent: "astro"}
+    ];
 
     #loadTimestamp() {
         this.time.innerText = `${user.time} ${user.timezone}`;
@@ -50,8 +73,30 @@ class loadPage {
         }
     }
 
-    #makeMainDisplay() {
-        // COMPLETE WHEN YOU HAVE ALL DATA
+    static #loadMainDisplay(data) {
+        const mainPlacehodler = document.getElementById("secondary-data");
+        mainPlacehodler.innerHTML = "";
+
+        document.querySelector(".avgtemp").innerText = data.day[`avgtemp_${standard}`];
+        document.querySelector(".weather-img > img").src = data.day.condition.icon;
+
+        for (let info of this.mainDayData) {
+            const placeholder = document.createElement("div");
+
+            const text = document.createElement("p");
+            text.innerText = info.text + ":";
+            placeholder.appendChild(text);
+            
+            const value = document.createElement("p");
+            value.innerText = data[info.parent][info.value];
+            placeholder.appendChild(value);
+
+            const image = document.createElement("img");
+            image.src = info.image;
+            placeholder.appendChild(image);
+
+            mainPlacehodler.appendChild(placeholder);
+        }
     }
 
     static async loadCity(cityName) {
@@ -59,6 +104,9 @@ class loadPage {
         try {
             await this.#loadHistoryAndPresent(cityName);
             await this.#loadForecast(cityName);
+            const today = storage.getDatawDate(format(new Date(), "yyyy-MM-dd"));
+            this.#selectCard(today.card);
+            this.#loadMainDisplay(today.data);
         } catch(err) {
             console.log(err);
         }
@@ -70,6 +118,7 @@ class loadPage {
                 const dt = format(sub(new Date(), {days: i}), "yyyy-MM-dd");
                 let data = await fetch(`https://api.weatherapi.com/v1/history.json?key=61b2b1c062454b8196c74023252809&q=${city}&dt=${dt}`);
                 data = await data.json();
+                console.log(data);
                 let card = this.#findEmptyCard();    
                 storage.addCard(card, data);
                 this.#displayCard(storage.getCard(card.id));
@@ -106,7 +155,10 @@ class loadPage {
         card.querySelector(".card-temp").innerText = data.day[`avgtemp_${standard}`];
 
         card.querySelector(".card-img").src = data.day.condition.icon;
-        console.log(cardData.data);
+
+        card.addEventListener("click", () => {
+            this.#loadMainDisplay(data);
+        })
     }
 
     static #findEmptyCard() {
@@ -125,7 +177,16 @@ class loadPage {
                 card.value = false;
                 storage.array = [];
             }
+    }
+
+    static #selectCard(c) {
+        for (let item of storage.array) {
+            if (item.card.classList.contains("selected")) {
+                item.card.classList.remove("selected");
+            }
         }
+        c.classList.add("selected");
+    }
 }
 
 class Search {
