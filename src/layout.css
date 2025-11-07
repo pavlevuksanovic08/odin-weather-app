@@ -1,0 +1,72 @@
+#header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 4%;
+}
+
+#logo {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    img {
+        width: 70px;
+        height: 70px;
+    }
+}
+
+#user-timestamp * {
+    margin: 3%;
+    font-size: 0.9rem;
+}
+
+#search-section {
+    display: flex;
+    gap: 10px;
+    width: 20%;
+    height: 2%;
+    position: absolute;
+    left: calc(50% - 20% / 2);
+    top: 7%;
+}
+
+
+
+#cards-section {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 10%;
+}
+
+#main-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+    max-width: 60%;                 
+    width: 100%;
+}
+
+#title-data {
+    width: 100%;                    /* ensures left alignment matches grid width */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;    /* keeps internal elements left-aligned */
+    gap: 10px;
+}
+
+#secondary-data {
+    width: 100%;                    /* ensures grid aligns with title-data */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* adjust as needed */
+    gap: 10px;
+    img {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+.scd-info {
+    display: flex;
+    gap: 20px;
+}

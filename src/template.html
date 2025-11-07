@@ -12,6 +12,15 @@
             <img src="./images/sun-logo.png">
             <p>Weather App</p>
         </div>
+        <div id="search-section">
+            <div id="search-bar">
+                <input type="search" id="search" autocomplete="off" required>
+                <div id="suggestions"></div>
+            </div>
+            <div>
+                <button id="search-btn">Search</button>
+            </div>
+        </div>
         <div id="user-timestamp">
             <p id="time"></p>
             <p id="date"></p>
@@ -19,20 +28,12 @@
             <p id="location"></p>
         </div>
     </div>
-    <div id="search-section">
-        <div id="search-bar">
-            <input type="search" id="search" autocomplete="off" required>
-            <div id="suggestions"></div>
-        </div>
-        <div>
-            <button id="search-btn">Search</button>
-        </div>
-    </div>
+   
     <div id="main">
         <h1 id="city-name"></h1>
         <div id="cards-section"></div>
         <div id="main-data">
-            <div class="title-data">
+            <div id="title-data">
                 <div class="avgtemp"></div>
                 <div class="weather-img">
                     <img>

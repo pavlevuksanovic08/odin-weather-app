@@ -15,6 +15,7 @@ import sunrise from "./images/mainDataImages/sunrise.png";
 import sunset from "./images/mainDataImages/sunset.png";
 import moonrise from "./images/mainDataImages/moonrise.png";
 import moonset from "./images/mainDataImages/moonset.png";
+import "./layout.css";
 
 const user = await UsersData.init();
 const storage = new DayCard();
@@ -33,7 +34,7 @@ class loadPage {
     }
 
     static mainDayData = [
-        {text: "Minimum temperature", value: `mintemp_${standard}`, image: lowTemp, parent: "day"}, {text: "Maximum temperature temperature", value: `maxtemp_${standard}`, image: highTemp, parent: "day"},
+        {text: "Minimum temperature", value: `mintemp_${standard}`, image: lowTemp, parent: "day"}, {text: "Maximum temperature", value: `maxtemp_${standard}`, image: highTemp, parent: "day"},
         {text: "Daily chance of rain", value: "daily_chance_of_rain", image: chanceOfRain, parent: "day"}, {text: "Daily chance of snow", value: "daily_chance_of_snow", image: chanceOfSnow, parent: "day"},
         {text: "Average humidity", value: "avghumidity", image:humidity, parent: "day"}, {text: "Average visibility (km)", value: "avgvis_km", image: visibility, parent: "day"}, 
         {text: "Total precipitation", value: "totalprecip_mm", image: precipitation, parent: "day"}, {text: "Total snow (cm)", value: "totalsnow_cm", image: snow, parent: "day"},
@@ -82,6 +83,7 @@ class loadPage {
 
         for (let info of this.mainDayData) {
             const placeholder = document.createElement("div");
+            placeholder.classList.add("scd-info");
 
             const text = document.createElement("p");
             text.innerText = info.text + ":";
