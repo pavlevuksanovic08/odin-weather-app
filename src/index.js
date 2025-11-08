@@ -16,6 +16,7 @@ import sunset from "./images/mainDataImages/sunset.png";
 import moonrise from "./images/mainDataImages/moonrise.png";
 import moonset from "./images/mainDataImages/moonset.png";
 import "./layout.css";
+import "./backgrounds.css"
 
 const user = await UsersData.init();
 const storage = new DayCard();
@@ -160,6 +161,7 @@ class loadPage {
 
         card.addEventListener("click", () => {
             this.#loadMainDisplay(data);
+            changeBackground(findWeather(data.day.condition.code))
         })
     }
 
@@ -265,6 +267,37 @@ function getDayText(date) {
     } else if (differenceInCalendarDays(date, today) > 1) {
         return `in ${differenceInCalendarDays(date, today)} days`;
     }
+}
+
+function findWeather(code) {
+    let weather;
+    if (code === 1000) {
+        weather = "sunny";
+    } else if (code === 1003) {
+        weather = "partly-cloudy";
+    } else if ([1006, 1009].includes(code)) {
+        weather = "cloudy";
+    } else if ([1030, 1135, 1147].includes(code)) {
+        weather = "fog";
+    } else if ([1063, 1150, 1153, 1180, 1183, 1186].includes(code)) {
+        weather = "light-rain";
+    } else if ([1189, 1192, 1195, 1204, 1240, 1243].includes(code)) {
+        weather = "heavy-rain";
+    } else if ([1087, 1273, 1276, 1279].includes(code)) {
+        weather = "thunder";
+    } else if ([1066, 1114, 1117, 1210, 1213, 1216, 1219, 1222, 1255, 1258].includes(code)) {
+        weather = "snow";
+    } else if ([1207, 1237, 1249, 1252, 1261].includes(code)) {
+        weather = "sleet";
+    } else {
+        weather = "default"; // fallback background
+    }
+
+    return weather;
+}
+
+function changeBackground(weather) {
+    document.querySelector("body").style.backgroundImage = `url("/backgrounds/${weather}.jpg")`;
 }
 
 new loadPage();
