@@ -79,9 +79,6 @@ class loadPage {
         const mainPlacehodler = document.getElementById("secondary-data");
         mainPlacehodler.innerHTML = "";
 
-        document.querySelector(".avgtemp").innerText = data.day[`avgtemp_${standard}`];
-        document.querySelector(".weather-img > img").src = data.day.condition.icon;
-
         for (let info of this.mainDayData) {
             const placeholder = document.createElement("div");
             placeholder.classList.add("scd-info");
