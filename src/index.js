@@ -76,9 +76,11 @@ class loadPage {
         }
     }
 
-    static #loadMainDisplay(data) {
+    static #loadMainDisplay(data, city) {
         const mainPlacehodler = document.getElementById("secondary-data");
         mainPlacehodler.innerHTML = "";
+
+        document.getElementById("city-name").innerText = city;
 
         for (let info of this.mainDayData) {
             const placeholder = document.createElement("div");
@@ -107,7 +109,7 @@ class loadPage {
             await this.#loadForecast(city, lat, lon);
             const today = storage.getDatawDate(format(new Date(), "yyyy-MM-dd"));
             this.#selectCard(today.card);
-            this.#loadMainDisplay(today.data);
+            this.#loadMainDisplay(today.data, today.city);
         } catch(err) {
             console.log(err);
         }
@@ -153,7 +155,7 @@ class loadPage {
     static #displayCard(cardData) {
         const card = cardData.card;
         const data = cardData.data;
-
+        const city = cardData.city;
         //DISPLAY TITLE
         card.querySelector(".card-title").innerText = getDayText(data.date);
 
@@ -162,7 +164,7 @@ class loadPage {
         card.querySelector(".card-img").src = data.day.condition.icon;
 
         card.addEventListener("click", () => {
-            this.#loadMainDisplay(data);
+            this.#loadMainDisplay(data, city);
             changeBackground(findWeather(data.day.condition.code));
             this.#selectCard(card);
         })

@@ -7,7 +7,7 @@ export class DayCard {
         if (this.array.length > 7) {
             throw new Error("Array overflow");
         }
-        this.array.push({card: card, data: data.forecast.forecastday[0]});
+        this.array.push({card: card, data: data.forecast.forecastday[0], city: data.location.name});
     }
 
     getCard(id) {

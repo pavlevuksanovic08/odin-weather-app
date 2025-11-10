@@ -8,8 +8,15 @@
     src: url("/public/fonts/Asap-Regular.ttf") format("truetype");
 }
 
-body {
+html, body {
     font-family: "Asap-Bold";
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+body::-webkit-scrollbar {
+    display: none;
 }
 
 #logo {
@@ -72,4 +79,10 @@ button {
     background-color: rgb(27,141,255);
     color: white;
 }
+
+#city-name {
+    text-align: center;
+    font-size: 48px;
+}
+
 
