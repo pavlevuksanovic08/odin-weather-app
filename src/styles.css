@@ -27,7 +27,6 @@ body::-webkit-scrollbar {
 
 #user-timestamp {
     text-align: right;
-    margin-right: 0.5%;
 }
 
 input {
@@ -85,4 +84,7 @@ button {
     font-size: 48px;
 }
 
+#logo, #search-section, #user-timestamp {
+    flex: 1;
+}
 
