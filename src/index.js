@@ -159,7 +159,8 @@ class loadPage {
 
         card.addEventListener("click", () => {
             this.#loadMainDisplay(data);
-            changeBackground(findWeather(data.day.condition.code))
+            changeBackground(findWeather(data.day.condition.code));
+            this.#selectCard(card);
         })
     }
 
