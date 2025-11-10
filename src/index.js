@@ -100,11 +100,11 @@ class loadPage {
         }
     }
 
-    static async loadCity(cityName) {
+    static async loadCity(city, lat, lon) {
         this.#clearCards();
         try {
-            await this.#loadHistoryAndPresent(cityName);
-            await this.#loadForecast(cityName);
+            await this.#loadHistoryAndPresent(city, lat, lon);
+            await this.#loadForecast(city, lat, lon);
             const today = storage.getDatawDate(format(new Date(), "yyyy-MM-dd"));
             this.#selectCard(today.card);
             this.#loadMainDisplay(today.data);
@@ -113,11 +113,13 @@ class loadPage {
         }
     }
 
-    static async #loadHistoryAndPresent(city) {
+    static async #loadHistoryAndPresent(city, lat, lon) {
         try {
             for (let i = 2; i >= 0; i--) {
                 const dt = format(sub(new Date(), {days: i}), "yyyy-MM-dd");
-                let data = await fetch(`https://api.weatherapi.com/v1/history.json?key=61b2b1c062454b8196c74023252809&q=${city}&dt=${dt}`);
+                let data;
+                if (lat && lon) data = await fetch(`https://api.weatherapi.com/v1/history.json?key=61b2b1c062454b8196c74023252809&q=${lat}, ${lon}&dt=${dt}`);
+                else data = await fetch(`https://api.weatherapi.com/v1/history.json?key=61b2b1c062454b8196c74023252809&q=${city}&dt=${dt}`);                
                 data = await data.json();
                 console.log(data);
                 let card = this.#findEmptyCard();    
@@ -130,11 +132,13 @@ class loadPage {
         
     }
 
-    static async #loadForecast(city) {
+    static async #loadForecast(city, lat, lon) {
         try {
             for (let i = 1; i <= 3; i++) {
                 let dt = format(add(new Date(), {days: i}), "yyyy-MM-dd");
-                let data = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=61b2b1c062454b8196c74023252809&q=${city}&dt=${dt}`);
+                let data;
+                if (lat && lon) data = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=61b2b1c062454b8196c74023252809&q=${lat}, ${lon}&dt=${dt}`);
+                else data = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=61b2b1c062454b8196c74023252809&q=${city}&dt=${dt}`);
                 data = await data.json();
                 let card = this.#findEmptyCard();
                 storage.addCard(card, data);
@@ -196,7 +200,8 @@ class Search {
     constructor() {
         this.searchBar = document.getElementById("search");
         this.btn = document.getElementById("search-btn");
-
+        this.suggestionsDiv = document.getElementById("suggestions");
+        this.suggestions;
         this.#dynamicLocationSearch();
         this.#handleBtnClick();
     }
@@ -204,9 +209,15 @@ class Search {
     async #dynamicLocationSearch() {
         this.searchBar.addEventListener("input", async (event) => {
             try {
-                let suggestions = await fetch(`https://api.weatherapi.com/v1/search.json?key=61b2b1c062454b8196c74023252809&q=${event.target.value}`);
-                suggestions = await suggestions.json();
-                this.#loadSuggestions(suggestions);
+                if (this.searchBar.validity.valueMissing) {
+                    this.suggestionsDiv.style.visibility = "hidden";
+                    return;
+                }
+                this.suggestionsDiv.style.visibility = "visible";
+                this.suggestions = await fetch(`https://api.weatherapi.com/v1/search.json?key=61b2b1c062454b8196c74023252809&q=${event.target.value}`);
+                this.suggestions = await this.suggestions.json();              
+                this.#loadSuggestions(this.suggestions);
+                this.#selectSuggestion(this.suggestions[0]);
             } catch(err) {
                 console.log(err);
             }
@@ -214,24 +225,50 @@ class Search {
     }
 
     #loadSuggestions(suggestions) {
-        const suggestionsDiv = document.getElementById("suggestions");
-        suggestionsDiv.innerHTML = "";
+        this.suggestionsDiv.innerHTML = "";
         for (let suggestion of suggestions) {
 
             const placeholder = document.createElement("div");
             placeholder.className = "suggestion";
+            placeholder.id = suggestion.id;
+            placeholder.value = suggestion.name;
+            placeholder.lat = suggestion.lat;
+            placeholder.lon = suggestion.lon;
 
             const cityName = document.createElement("p");
             cityName.className = "city-name";
             cityName.innerText = `${suggestion.name}, ${suggestion.country}`;
             placeholder.appendChild(cityName);
             
-            suggestionsDiv.appendChild(placeholder);
+            this.suggestionsDiv.appendChild(placeholder);
 
             placeholder.addEventListener("click", () => {
                 this.searchBar.value = suggestion.name;
+                this.searchBar.lat = suggestion.lat;
+                this.searchBar.lon = suggestion.lon;
+            });
+            placeholder.addEventListener("mouseenter", () => {
+                this.#selectSuggestion(suggestion);
+            });
+            document.addEventListener("keydown", (event) => {
+                if (event.key == "Enter") {
+                    this.searchBar.value = document.querySelector(".selected-suggestion").value;
+                    this.searchBar.lat = document.querySelector(".selected-suggestion").lat;
+                    this.searchBar.lon = document.querySelector(".selected-suggestion").lon;
+                }
             })
+        }
+    }
 
+    #selectSuggestion(s) { //fetch value
+        let suggestions = document.querySelectorAll(".suggestion"); //DOM value
+        for (let suggestion of suggestions) {
+            if (suggestion.classList.contains("selected-suggestion")) {
+                suggestion.classList.remove("selected-suggestion");
+            }
+            if (suggestion.id == s.id) {
+                suggestion.classList.add("selected-suggestion");
+            }
         }
     }
 
@@ -239,7 +276,13 @@ class Search {
         this.btn.addEventListener("click", () => {
             if (!this.searchBar.validity.valueMissing) {
                 let city = this.searchBar.value;
-                loadPage.loadCity(city);
+                let lat = this.searchBar.lat;
+                let lon = this.searchBar.lon;
+                loadPage.loadCity(city, lat, lon);
+                this.suggestionsDiv.style.visibility = "hidden";
+                this.searchBar.value = "";
+                this.searchBar.lat = ""
+                this.searchBar.lon = ""
             } else {
                 this.searchBar.setCustomValidity("Name of the city is required.");
                 this.searchBar.reportValidity();
