@@ -23,36 +23,48 @@
 #search-section {
     display: flex;
     gap: 10px;
-    width: 20%;
-    height: 2%;
-    position: absolute;
     left: calc(50% - 20% / 2);
     top: 7%;
 }
 
+#search-bar {
+    position: relative;
+}
 
+#search {
+    height: 30px;
+    width: 200px;
+    box-sizing: border-box;
+}
+
+
+#suggestions {
+    position: absolute;
+    z-index: 10;
+    top: 120%;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
 
 #cards-section {
     display: flex;
     justify-content: space-between;
-    margin: 0 10%;
+    margin: 0 9%;
+    .card {
+        width: 12%;
+        padding: 1%;
+    }
 }
 
 #main-data {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 auto;
-    max-width: 60%;                 
+    margin: 3% auto;
+    padding: 1%;
+    max-width: 80%;                 
     width: 100%;
-}
-
-#title-data {
-    width: 100%;                    /* ensures left alignment matches grid width */
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;    /* keeps internal elements left-aligned */
-    gap: 10px;
 }
 
 #secondary-data {
@@ -70,3 +82,5 @@
     display: flex;
     gap: 20px;
 }
+
+

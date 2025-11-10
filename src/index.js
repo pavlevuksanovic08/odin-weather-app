@@ -16,7 +16,8 @@ import sunset from "./images/mainDataImages/sunset.png";
 import moonrise from "./images/mainDataImages/moonrise.png";
 import moonset from "./images/mainDataImages/moonset.png";
 import "./layout.css";
-import "./backgrounds.css"
+import "./backgrounds.css";
+import "./styles.css";
 
 const user = await UsersData.init();
 const storage = new DayCard();

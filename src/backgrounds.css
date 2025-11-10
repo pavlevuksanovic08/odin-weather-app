@@ -2,5 +2,11 @@ body {
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    image-rendering: auto;    
+    image-rendering: auto;
+    color: white;    
+}
+
+.card, #main-data {
+    background-color: rgb(175, 175, 175, 0.3);
+    border-radius: 5px;
 }
