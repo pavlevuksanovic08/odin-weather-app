@@ -27,7 +27,7 @@ export class UsersData {
     async setLocation() {
         
         try {
-            const position = await this.getPositon();
+            const position = await this.getPosition();
             
             let data = await fetch(`https://api.geoapify.com/v1/geocode/reverse?lat=${position.lat}&lon=${position.long}&apiKey=82044b6f0cfd4f8194819869cb67c48f`);
             data = await data.json();
@@ -38,7 +38,7 @@ export class UsersData {
         
     }
 
-    getPositon() {
+    getPosition() {
         return new Promise((resolve, reject) => {
             if (navigator.geolocation) {
               navigator.geolocation.getCurrentPosition(

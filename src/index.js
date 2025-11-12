@@ -33,6 +33,7 @@ class loadPage {
         this.#loadTimestamp();
         this.#makeCards();
         this.#toggleStandard();
+        this.#initialLoad();
     }
 
     static #getMainDayData() {
@@ -77,7 +78,7 @@ class loadPage {
             cards.appendChild(placeholder);
         }
     }
-    
+
     static #loadMainDisplay(data, city) {
         const mainPlacehodler = document.getElementById("secondary-data");
         mainPlacehodler.innerHTML = "";
@@ -122,10 +123,11 @@ class loadPage {
             for (let i = 2; i >= 0; i--) {
                 const dt = format(sub(new Date(), {days: i}), "yyyy-MM-dd");
                 let data;
+                console.log(lat)
+                console.log(lon)
                 if (lat && lon) data = await fetch(`https://api.weatherapi.com/v1/history.json?key=61b2b1c062454b8196c74023252809&q=${lat}, ${lon}&dt=${dt}`);
                 else data = await fetch(`https://api.weatherapi.com/v1/history.json?key=61b2b1c062454b8196c74023252809&q=${city}&dt=${dt}`);                
                 data = await data.json();
-                console.log(data);
                 let card = this.#findEmptyCard();    
                 storage.addCard(card, data);
                 this.#displayCard(storage.getCard(card.id));
@@ -208,9 +210,17 @@ class loadPage {
                     standard = "c";
                 }
                 const today = storage.getDatawDate(format(new Date(), "yyyy-MM-dd"));
-                loadPage.loadCity(today.city.name, today.city.lat, today.city.lon);
+                loadPage.loadCity(today.city.name, today.city.lat, today.city.long);
             });
         });
+    }
+
+    async #initialLoad() {
+        const position = await user.getPosition();
+        await loadPage.loadCity("", position.lat, position.long);
+        const today = storage.getDatawDate(format(new Date(), "yyyy-MM-dd"));
+        console.log(today)
+        changeBackground(findWeather(today.data.day.condition.code));
     }
 
 }
