@@ -88,3 +88,8 @@ button {
     flex: 1;
 }
 
+#standard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

@@ -32,18 +32,20 @@ class loadPage {
         
         this.#loadTimestamp();
         this.#makeCards();
-
+        this.#toggleStandard();
     }
 
-    static mainDayData = [
-        {text: "Minimum temperature", value: `mintemp_${standard}`, unit: `°${standard.toUpperCase()}`, image: lowTemp, parent: "day"}, {text: "Maximum temperature", value: `maxtemp_${standard}`, unit: `°${standard.toUpperCase()}`, image: highTemp, parent: "day"},
-        {text: "Daily chance of rain", value: "daily_chance_of_rain", unit: "%", image: chanceOfRain, parent: "day"}, {text: "Daily chance of snow", value: "daily_chance_of_snow", unit: "%", image: chanceOfSnow, parent: "day"},
-        {text: "Average humidity", value: "avghumidity", unit: "%", image:humidity, parent: "day"}, {text: "Average visibility", value: "avgvis_km", unit: "km", image: visibility, parent: "day"}, 
-        {text: "Total precipitation", value: "totalprecip_mm", unit: "mm", image: precipitation, parent: "day"}, {text: "Total snow", value: "totalsnow_cm", unit: "cm", image: snow, parent: "day"},
-        {text: "Maximum wind", value: "maxwind_kph", unit: "kph", image: wind, parent: "day"}, {text: "UV", value: "uv", unit: "", image: uv, parent: "day"},
-        {text: "Sunrise", value: "sunrise", unit: "", image: sunrise, parent: "astro"}, {text: "Sunset", value: "sunset", unit: "", image: sunset, parent: "astro"},
-        {text: "Moonrise", value: "moonrise", unit: "", image: moonrise, parent: "astro"}, {text: "Moonset", value: "moonset", unit: "", image: moonset, parent: "astro"}
-    ];
+    static #getMainDayData() {
+        return [
+            {text: "Minimum temperature", value: `mintemp_${standard}`, unit: `°${standard.toUpperCase()}`, image: lowTemp, parent: "day"}, {text: "Maximum temperature", value: `maxtemp_${standard}`, unit: `°${standard.toUpperCase()}`, image: highTemp, parent: "day"},
+            {text: "Daily chance of rain", value: "daily_chance_of_rain", unit: "%", image: chanceOfRain, parent: "day"}, {text: "Daily chance of snow", value: "daily_chance_of_snow", unit: "%", image: chanceOfSnow, parent: "day"},
+            {text: "Average humidity", value: "avghumidity", unit: "%", image:humidity, parent: "day"}, {text: "Average visibility", value: "avgvis_km", unit: "km", image: visibility, parent: "day"}, 
+            {text: "Total precipitation", value: "totalprecip_mm", unit: "mm", image: precipitation, parent: "day"}, {text: "Total snow", value: "totalsnow_cm", unit: "cm", image: snow, parent: "day"},
+            {text: "Maximum wind", value: "maxwind_kph", unit: "kph", image: wind, parent: "day"}, {text: "UV", value: "uv", unit: "", image: uv, parent: "day"},
+            {text: "Sunrise", value: "sunrise", unit: "", image: sunrise, parent: "astro"}, {text: "Sunset", value: "sunset", unit: "", image: sunset, parent: "astro"},
+            {text: "Moonrise", value: "moonrise", unit: "", image: moonrise, parent: "astro"}, {text: "Moonset", value: "moonset", unit: "", image: moonset, parent: "astro"}
+        ];
+    };
 
     #loadTimestamp() {
         this.time.innerText = `${user.time} ${user.timezone}`;
@@ -75,14 +77,14 @@ class loadPage {
             cards.appendChild(placeholder);
         }
     }
-
+    
     static #loadMainDisplay(data, city) {
         const mainPlacehodler = document.getElementById("secondary-data");
         mainPlacehodler.innerHTML = "";
 
-        document.getElementById("city-name").innerText = city;
+        document.getElementById("city-name").innerText = city.name;
 
-        for (let info of this.mainDayData) {
+        for (let info of this.#getMainDayData()) {
             const placeholder = document.createElement("div");
             placeholder.classList.add("scd-info");
 
@@ -196,6 +198,21 @@ class loadPage {
         }
         c.classList.add("selected");
     }
+
+    #toggleStandard() {
+        document.querySelectorAll("input[name='standard'").forEach(radio => {
+            radio.addEventListener("change", () => {
+                if (standard == "c") {
+                    standard = "f";
+                } else {
+                    standard = "c";
+                }
+                const today = storage.getDatawDate(format(new Date(), "yyyy-MM-dd"));
+                loadPage.loadCity(today.city.name, today.city.lat, today.city.lon);
+            });
+        });
+    }
+
 }
 
 class Search {
